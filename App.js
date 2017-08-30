@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, PanResponder, StyleSheet, Text, View } from 'react-native';
 import data from './src/data';
 import Card from './src/components/Card';
 import Button from './src/components/Button';
@@ -13,11 +13,17 @@ export default class App extends React.Component {
 
   position = new Animated.Value(0);
 
+  panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: Animated.event([null, { dx: this.position }])
+  });
+
   nopePressed = () => {
     Animated.spring(this.position, {
       friction: 11,
       tension: 60,
-      toValue: -1
+      toValue: -SWIPE_DISTANCE
     }).start(this.moveToNext);
   };
 
@@ -25,7 +31,7 @@ export default class App extends React.Component {
     Animated.spring(this.position, {
       friction: 11,
       tension: 60,
-      toValue: 1
+      toValue: SWIPE_DISTANCE
     }).start(this.moveToNext);
   };
 
@@ -49,12 +55,9 @@ export default class App extends React.Component {
   render() {
     const [item, next] = this.state.items;
 
-    const translateX = this.position.interpolate({
-      inputRange: [-1, +1],
-      outputRange: [-SWIPE_DISTANCE, SWIPE_DISTANCE]
-    });
+    const translateX = this.position;
 
-    const rotate = this.position.interpolate({
+    const rotate = Animated.divide(this.position, SWIPE_DISTANCE).interpolate({
       inputRange: [-1, +1],
       outputRange: ['-30deg', '30deg']
     });
@@ -63,7 +66,7 @@ export default class App extends React.Component {
       transform: [{ translateX }, { rotate }]
     };
 
-    const nextScale = this.position.interpolate({
+    const nextScale = Animated.divide(this.position, SWIPE_DISTANCE).interpolate({
       inputRange: [-1, -0.2, 0.2, 1],
       outputRange: [1, 0.75, 0.75, 1]
     });
@@ -77,7 +80,11 @@ export default class App extends React.Component {
         <Animated.View key={next.text} style={[styles.card, nextCardStyle]}>
           <Card image={next.image} text={next.text} />
         </Animated.View>
-        <Animated.View key={item.text} style={[styles.card, animatedStyle]}>
+        <Animated.View
+          key={item.text}
+          style={[styles.card, animatedStyle]}
+          {...this.panResponder.panHandlers}
+        >
           <Card image={item.image} text={item.text} />
         </Animated.View>
         <View style={styles.buttonBar}>
