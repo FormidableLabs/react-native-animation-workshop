@@ -14,19 +14,40 @@ export default class App extends React.Component {
   position = new Animated.Value(0);
 
   nopePressed = () => {
-    Animated.timing(this.position, {
+    Animated.spring(this.position, {
+      friction: 11,
+      tension: 60,
       toValue: -1
-    }).start();
+    }).start(this.moveToNext);
   };
 
   yepPressed = () => {
-    Animated.timing(this.position, {
+    Animated.spring(this.position, {
+      friction: 11,
+      tension: 60,
       toValue: 1
-    }).start();
+    }).start(this.moveToNext);
+  };
+
+  moveToNext = ({ finished }) => {
+    if (!finished) {
+      return;
+    }
+
+    this.setState(prevState => {
+      const [first, ...rest] = prevState.items;
+      return {
+        items: [...rest, first]
+      };
+    }, this.resetPosition);
+  };
+
+  resetPosition = () => {
+    this.position.setValue(0);
   };
 
   render() {
-    const item = this.state.items[0];
+    const [item, next] = this.state.items;
 
     const translateX = this.position.interpolate({
       inputRange: [-1, +1],
@@ -42,9 +63,21 @@ export default class App extends React.Component {
       transform: [{ translateX }, { rotate }]
     };
 
+    const nextScale = this.position.interpolate({
+      inputRange: [-1, -0.2, 0.2, 1],
+      outputRange: [1, 0.75, 0.75, 1]
+    });
+
+    const nextCardStyle = {
+      transform: [{ scale: nextScale }]
+    };
+
     return (
       <View style={styles.container}>
-        <Animated.View style={animatedStyle}>
+        <Animated.View key={next.id} style={[styles.card, nextCardStyle]}>
+          <Card image={next.image} text={next.text} />
+        </Animated.View>
+        <Animated.View key={item.id} style={[styles.card, animatedStyle]}>
           <Card image={item.image} text={item.text} />
         </Animated.View>
         <View style={styles.buttonBar}>
@@ -62,6 +95,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(242, 245, 253)',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  card: {
+    position: 'absolute'
   },
   buttonBar: {
     alignItems: 'stretch',
