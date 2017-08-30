@@ -74,10 +74,10 @@ export default class App extends React.Component {
 
     return (
       <View style={styles.container}>
-        <Animated.View key={next.id} style={[styles.card, nextCardStyle]}>
+        <Animated.View key={next.text} style={[styles.card, nextCardStyle]}>
           <Card image={next.image} text={next.text} />
         </Animated.View>
-        <Animated.View key={item.id} style={[styles.card, animatedStyle]}>
+        <Animated.View key={item.text} style={[styles.card, animatedStyle]}>
           <Card image={item.image} text={item.text} />
         </Animated.View>
         <View style={styles.buttonBar}>
