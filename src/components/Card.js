@@ -11,8 +11,10 @@ type Props = {
 const Card = ({ image, text }: Props) => (
   <View style={styles.card}>
     <Image source={image} style={[styles.image]} resizeMode="cover" />
-    <View style={styles.text}>
-      <Text>{text}</Text>
+    <View style={styles.textWrapper}>
+      <Text numberOfLines={1} style={styles.text}>
+        {text}
+      </Text>
     </View>
   </View>
 );
@@ -23,22 +25,28 @@ const styles = StyleSheet.create({
   card: {
     width: 300,
     height: 300,
-    borderRadius: 7,
-    shadowColor: '#000',
-    shadowOpacity: 0.17,
-    shadowOffset: { x: 0, y: 0 },
-    shadowRadius: 20,
-    elevation: 3
+    backgroundColor: 'white',
+    overflow: 'hidden',
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ddd'
+  },
+  textWrapper: {
+    flex: 1,
+    padding: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   text: {
-    flex: 1,
-    backgroundColor: '#FFF',
-    padding: 5
+    textAlign: 'center',
+    fontSize: 18
   },
   image: {
     width: null,
     height: null,
-    borderRadius: 2,
-    flex: 3
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    flex: 4
   }
 });

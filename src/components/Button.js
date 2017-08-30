@@ -22,7 +22,7 @@ const Touchable = Platform.select({
   android: TouchableNativeFeedback
 });
 const Button = ({ text, textColor, backgroundColor, onPress }: Props) => (
-  <Touchable onPress={onPress}>
+  <Touchable onPress={onPress} style={styles.touchable}>
     <View style={[styles.button, { backgroundColor }]}>
       <Text style={[styles.text, { color: textColor }]}>{text}</Text>
     </View>
@@ -37,12 +37,19 @@ Button.defaultProps = {
 export default Button;
 
 const styles = StyleSheet.create({
+  touchable: {
+    flex: 1
+  },
   button: {
     flex: 1,
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 2,
     margin: 5
   },
-  text: {}
+  text: {
+    fontWeight: 'bold',
+    fontSize: 18
+  }
 });
