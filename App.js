@@ -5,6 +5,7 @@ import Card from './src/components/Card';
 import Button from './src/components/Button';
 
 const SWIPE_DISTANCE = Dimensions.get('window').width;
+const SWIPE_THRESHOLD = SWIPE_DISTANCE / 3;
 
 export default class App extends React.Component {
   state = {
@@ -12,11 +13,25 @@ export default class App extends React.Component {
   };
 
   position = new Animated.Value(0);
-
   panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event([null, { dx: this.position }])
+    onPanResponderMove: Animated.event([null, { dx: this.position }]),
+    onPanResponderRelease: (e, { dx, vx }) => {
+      if (Math.abs(dx) > SWIPE_THRESHOLD) {
+        const direction = dx > 0 ? 1 : -1;
+        const velocity = Math.max(2.5, Math.abs(vx)) * direction;
+        Animated.decay(this.position, {
+          velocity,
+          deceleration: 0.985
+        }).start(this.moveToNext);
+      } else {
+        Animated.spring(this.position, {
+          toValue: 0,
+          friction: 4
+        }).start();
+      }
+    }
   });
 
   nopePressed = () => {
@@ -59,7 +74,8 @@ export default class App extends React.Component {
 
     const rotate = Animated.divide(this.position, SWIPE_DISTANCE).interpolate({
       inputRange: [-1, +1],
-      outputRange: ['-30deg', '30deg']
+      outputRange: ['-30deg', '30deg'],
+      extrapolate: 'clamp'
     });
 
     const animatedStyle = {
@@ -68,7 +84,8 @@ export default class App extends React.Component {
 
     const nextScale = Animated.divide(this.position, SWIPE_DISTANCE).interpolate({
       inputRange: [-1, -0.2, 0.2, 1],
-      outputRange: [1, 0.75, 0.75, 1]
+      outputRange: [1, 0.75, 0.75, 1],
+      extrapolate: 'clamp'
     });
 
     const nextCardStyle = {
