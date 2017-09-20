@@ -23,12 +23,14 @@ export default class App extends React.Component {
         const velocity = Math.max(2.5, Math.abs(vx)) * direction;
         Animated.decay(this.position, {
           velocity,
-          deceleration: 0.985
+          deceleration: 0.985,
+          useNativeDriver: true
         }).start(this.moveToNext);
       } else {
         Animated.spring(this.position, {
           toValue: 0,
-          friction: 4
+          friction: 4,
+          useNativeDriver: true
         }).start();
       }
     }
@@ -38,7 +40,8 @@ export default class App extends React.Component {
     Animated.spring(this.position, {
       friction: 11,
       tension: 60,
-      toValue: -SWIPE_DISTANCE
+      toValue: -SWIPE_DISTANCE,
+      useNativeDriver: true
     }).start(this.moveToNext);
   };
 
@@ -46,7 +49,8 @@ export default class App extends React.Component {
     Animated.spring(this.position, {
       friction: 11,
       tension: 60,
-      toValue: SWIPE_DISTANCE
+      toValue: SWIPE_DISTANCE,
+      useNativeDriver: true
     }).start(this.moveToNext);
   };
 
